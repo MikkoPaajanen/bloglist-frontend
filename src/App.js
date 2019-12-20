@@ -106,6 +106,33 @@ const App = () => {
     }
   }
   
+  // adds right information to http request put when adding a like
+  const addLike = async (id) => {
+    console.log('clicked button')
+    try {
+      console.log('id', id, typeof id)
+      const rightObject = blogs.find(blog => blog.id === id)
+      // console.log('blogObject', rightObject)
+      const blogObject = {
+        user: rightObject.user.id,
+        likes: rightObject.likes + 1,
+        author: rightObject.author,
+        title: rightObject.title,
+        url: rightObject.url,
+        id: rightObject.id
+      }
+      console.log('blogObject', blogObject)
+      blogService.setToken(user.token)
+      const returnedBlog = await blogService.update(blogObject)
+      setBlogs(blogs.map(blog => blog.title !== blogObject.title ? blog : returnedBlog))
+    } catch (exception) {
+      setErrorMessage('Something went wrong')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   // hides and shows blog form with the click of a button
   const blogForm = () => {
     const hideWhenVisible = { display: newBlogVisible ? 'none' : ''}
@@ -140,6 +167,7 @@ const App = () => {
       handleBlogs={handleBlogs}
       showAll={showAll}
       currentTitle={currentTitle}
+      addLike={addLike}
     />)
 
   // handles clicks on blogs name, sets blog title to currentTitle
@@ -150,8 +178,9 @@ const App = () => {
     setCurrentTitle(title)
     if (showAll === false) {
       setShowAll(true)
-    } else setShowAll(false)
-    
+    } else if (title === currentTitle) {
+      setShowAll(false)
+    }
   }
   // if user is not logged in app shows only login form
   if (user === null) {

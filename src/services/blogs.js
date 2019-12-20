@@ -22,4 +22,13 @@ const create = async newObject => {
   return response.data
 }
 
-export default { getAll, create, setToken }
+// updates likes to database when clicked like button
+const update = async updatedBlog => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const response = await axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog, config)
+  return response.data
+}
+
+export default { getAll, create, setToken, update }

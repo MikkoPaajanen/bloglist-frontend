@@ -160,15 +160,19 @@ const App = () => {
   }
 
   // maps through blogs and sends each blog to Blog component to render onscreen
-  const rows = () => blogs.map(blog => 
-    <Blog
-      key={blog.title}
-      blog={blog}
-      handleBlogs={handleBlogs}
-      showAll={showAll}
-      currentTitle={currentTitle}
-      addLike={addLike}
-    />)
+  const rows = () => {
+    blogs.sort((a, b) => b.likes - a.likes)
+    const some = () => blogs.map(blog => 
+      <Blog
+        key={blog.title}
+        blog={blog}
+        handleBlogs={handleBlogs}
+        showAll={showAll}
+        currentTitle={currentTitle}
+        addLike={addLike}
+      />)
+    return some()
+  }
 
   // handles clicks on blogs name, sets blog title to currentTitle
   // so that it can be compared to show all info only on clicked blog

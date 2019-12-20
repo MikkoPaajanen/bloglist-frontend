@@ -17,6 +17,9 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
   const [succesfulMessage, setSuccesfulMessage] = useState(null)
+  const [newBlogVisible, setNewBlogVisible] = useState(false)
+  const [showAll, setShowAll] = useState(false)
+  const [currentTitle, setCurrentTitle] = useState('')
 
   // gets all blogs from database
   useEffect(() => {
@@ -102,44 +105,54 @@ const App = () => {
       }, 5000)
     }
   }
-
   
+  // hides and shows blog form with the click of a button
+  const blogForm = () => {
+    const hideWhenVisible = { display: newBlogVisible ? 'none' : ''}
+    const showWhenVisible = { display: newBlogVisible ? '' : 'none'}
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setNewBlogVisible(true)}>Add a new blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <CreateBlog
+          addBlog={addBlog}
+          handleTitleChange={({ target }) => setNewTitle(target.value)}
+          handleAuthorChange={({ target }) => setNewAuthor(target.value)}
+          handleUrlChange={({ target }) => setNewUrl(target.value)}
+          newTitle={newTitle}
+          newAuthor={newAuthor}
+          newUrl={newUrl}
+          />
+          <button onClick={() => setNewBlogVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
+
   // maps through blogs and sends each blog to Blog component to render onscreen
   const rows = () => blogs.map(blog => 
     <Blog
       key={blog.title}
       blog={blog}
+      handleBlogs={handleBlogs}
+      showAll={showAll}
+      currentTitle={currentTitle}
     />)
 
-  // handles changes in title box
-  const handleTitleChange = (event) => {
-    setNewTitle(event.target.value)
-    console.log('newTitle', newTitle)
+  // handles clicks on blogs name, sets blog title to currentTitle
+  // so that it can be compared to show all info only on clicked blog
+  const handleBlogs = (title) => {
+    console.log('Clicked name')
+    console.log('cliced blog', title)
+    setCurrentTitle(title)
+    if (showAll === false) {
+      setShowAll(true)
+    } else setShowAll(false)
+    
   }
-
-  // handles changes in author box
-  const handleAuthorChange = (event) => {
-    setNewAuthor(event.target.value)
-    console.log('newAuthor', newAuthor)
-  }
-
-  // handles changes in url box
-  const handleUrlChange = (event) => {
-    setNewUrl(event.target.value)
-    console.log('newUrl', newUrl)
-  }
-
-  // handles changes in username box on login
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value)
-  }
-
-  // handles changes in password box on login
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value)
-  }
-
-
   // if user is not logged in app shows only login form
   if (user === null) {
     return (
@@ -148,9 +161,9 @@ const App = () => {
         errorMessage={errorMessage}
         handleLogin={handleLogin}
         username={username}
-        handleUsernameChange={handleUsernameChange}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
         password={password}
-        handlePasswordChange={handlePasswordChange}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
       />
     )
   }
@@ -163,15 +176,7 @@ const App = () => {
       <br/>
       <Notifications.Notification message={succesfulMessage}/>
       <Notifications.ErrorNotification message={errorMessage} />
-      <CreateBlog
-      addBlog={addBlog}
-      handleTitleChange={handleTitleChange}
-      handleAuthorChange={handleAuthorChange}
-      handleUrlChange={handleUrlChange}
-      newTitle={newTitle}
-      newAuthor={newAuthor}
-      newUrl={newUrl}
-      />
+      {blogForm()}
       <br/>
       {rows()}
     </div>

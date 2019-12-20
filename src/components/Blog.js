@@ -1,7 +1,13 @@
 import React from 'react'
 
 // renders a blog to the screen
-const Blog = ({ blog, handleBlogs, showAll, currentTitle, addLike }) => {
+const Blog = ({ 
+  blog, handleBlogs, 
+  showAll, 
+  currentTitle, 
+  addLike, 
+  removeBlog 
+}) => {
   const blogStyle = {
     padding: 5,
     margin: 5,
@@ -18,8 +24,10 @@ const Blog = ({ blog, handleBlogs, showAll, currentTitle, addLike }) => {
         <p onClick={() => handleBlogs(blog.title)}>{blog.title}, {blog.author}</p>
         <p>
         <a href={blog.url}>{blog.url}</a><br/>
-        {blog.likes} <button onClick={() => addLike(blog.id)}>like</button><br/>
-        added by {blog.user.name}</p>
+        {blog.likes} <button onClick={() => addLike(blog.id)}>Like</button><br/>
+        added by {blog.user.name}<br/>
+        <button onClick={() => removeBlog(blog.id)}>Remove blog</button>
+        </p>
       </div>
     )
   }

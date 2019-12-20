@@ -133,6 +133,28 @@ const App = () => {
     }
   }
 
+  const removeBlog = async (id) => {
+    try {
+      console.log('clicked remove', id)
+      const findBlog = blogs.find(blog => blog.id === id)
+      console.log('blog to remove', findBlog)
+      window.confirm(`Remove blog ${findBlog.title}`)
+      blogService.setToken(user.token)
+      const deletedBlog = await blogService.remove(findBlog)
+      console.log('deleted Blog', deletedBlog)
+      setBlogs(blogs.filter(blog => blog.id !== findBlog.id))
+      setSuccesfulMessage(`Succesfully removed ${deletedBlog.title}`)
+      setTimeout(() => {
+        setSuccesfulMessage(null)
+      })
+    } catch (exception) {
+      setErrorMessage('Unable to delete blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+    
+  }
   // hides and shows blog form with the click of a button
   const blogForm = () => {
     const hideWhenVisible = { display: newBlogVisible ? 'none' : ''}
@@ -170,6 +192,7 @@ const App = () => {
         showAll={showAll}
         currentTitle={currentTitle}
         addLike={addLike}
+        removeBlog={removeBlog}
       />)
     return some()
   }

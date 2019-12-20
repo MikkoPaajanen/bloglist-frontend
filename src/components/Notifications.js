@@ -1,5 +1,6 @@
 import React from 'react'
 
+// renders a notification if operation is succesful
 const Notification = ({ message }) => {
   if (message === null) {
       return null
@@ -9,6 +10,7 @@ const Notification = ({ message }) => {
   )
 }
 
+// renders an error notification if operation is not succesful
 const ErrorNotification = ({ message }) => {
   if (message === null) {
       return null
@@ -18,4 +20,4 @@ const ErrorNotification = ({ message }) => {
   )
 }
 
-export default { Notification, ErrorNotification}
+export default { Notification, ErrorNotification }

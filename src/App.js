@@ -3,26 +3,9 @@ import loginService from './services/login'
 import blogService from './services/blogs'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
+import LoginForm from './components/LoginForm'
+import Notifications from './components/Notifications'
 
-// renders a notification if operation is succesful
-const Notification = ({ message }) => {
-  if (message === null) {
-      return null
-  }
-  return (
-      <div className="succesful">{message}</div>
-  )
-}
-
-// renders an error notification if operation is not succesful
-const ErrorNotification = ({ message }) => {
-  if (message === null) {
-      return null
-  }
-  return (
-      <div className="error">{message}</div>
-  )
-}
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -120,36 +103,7 @@ const App = () => {
     }
   }
 
-  // creates login form 
-  const loginForm = () => (
-    <div>
-      <h2>Login</h2>
-      <Notification message={succesfulMessage}/>
-      <ErrorNotification message={errorMessage} />
-      <form onSubmit={handleLogin}>
-        <div>
-          Username 
-            <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-            />
-        </div>
-        <div>
-          Password
-            <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-            />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  )
-
+  
   // maps through blogs and sends each blog to Blog component to render onscreen
   const rows = () => blogs.map(blog => 
     <Blog
@@ -158,26 +112,47 @@ const App = () => {
     />)
 
   // handles changes in title box
-  const handleTitleChange= (event) => {
+  const handleTitleChange = (event) => {
     setNewTitle(event.target.value)
     console.log('newTitle', newTitle)
   }
 
   // handles changes in author box
-  const handleAuthorChange= (event) => {
+  const handleAuthorChange = (event) => {
     setNewAuthor(event.target.value)
     console.log('newAuthor', newAuthor)
   }
 
   // handles changes in url box
-  const handleUrlChange= (event) => {
+  const handleUrlChange = (event) => {
     setNewUrl(event.target.value)
     console.log('newUrl', newUrl)
   }
 
+  // handles changes in username box on login
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value)
+  }
+
+  // handles changes in password box on login
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+  }
+
+
   // if user is not logged in app shows only login form
   if (user === null) {
-    return <div>{loginForm()}</div>
+    return (
+      <LoginForm 
+        succesfulMessage={succesfulMessage}
+        errorMessage={errorMessage}
+        handleLogin={handleLogin}
+        username={username}
+        handleUsernameChange={handleUsernameChange}
+        password={password}
+        handlePasswordChange={handlePasswordChange}
+      />
+    )
   }
 
   // when user is logged in app shows blogs and a form to add new blogs
@@ -186,8 +161,8 @@ const App = () => {
       <h2>Blogs</h2>
       <p>{user.name} logged in <button type="submit" onClick={() => logoutHandler()}>logout</button></p> 
       <br/>
-      <Notification message={succesfulMessage}/>
-      <ErrorNotification message={errorMessage} />
+      <Notifications.Notification message={succesfulMessage}/>
+      <Notifications.ErrorNotification message={errorMessage} />
       <CreateBlog
       addBlog={addBlog}
       handleTitleChange={handleTitleChange}

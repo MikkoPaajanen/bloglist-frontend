@@ -5,11 +5,14 @@ import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import LoginForm from './components/LoginForm'
 import Notifications from './components/Notifications'
+import { useField } from './hooks/index'
 
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  //const [username, setUsername] = useState('')
+  //const [password, setPassword] = useState('')
+  const username = useField('text')
+  const password = useField('password')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [blogs, setBlogs] = useState([])
@@ -21,6 +24,7 @@ const App = () => {
   const [showAll, setShowAll] = useState(false)
   const [currentTitle, setCurrentTitle] = useState('')
   const [remove, setRemove] = useState('')
+
 
   // gets all blogs from database
   useEffect(() => {
@@ -46,7 +50,8 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password
+        username: username.value,
+        password: password.value
       })
 
       window.localStorage.setItem(
@@ -54,8 +59,10 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setUsername('')
-      setPassword('')
+      //setUsername('')
+      //setPassword('')
+      username.reset()
+      password.reset()
       setSuccesfulMessage('Succesfully logged in')
       setTimeout(() => {
         setSuccesfulMessage(null)
@@ -229,9 +236,9 @@ const App = () => {
         errorMessage={errorMessage}
         handleLogin={handleLogin}
         username={username}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
+        //handleUsernameChange={({ target }) => setUsername(target.value)}
         password={password}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
+        //handlePasswordChange={({ target }) => setPassword(target.value)}
       />
     )
   }

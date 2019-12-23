@@ -20,10 +20,11 @@ const App = () => {
   const [newBlogVisible, setNewBlogVisible] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const [currentTitle, setCurrentTitle] = useState('')
+  const [remove, setRemove] = useState('')
 
   // gets all blogs from database
   useEffect(() => {
-    const getBlogs = async () => {
+    const getBlogs = async () => {
       const response = await blogService.getAll()
       setBlogs(response)
       console.log(response)
@@ -88,12 +89,11 @@ const App = () => {
       }
       blogService.setToken(user.token)
       // creates a new blog
-      await blogService.create(blogObject)
+      const returnedBlog = await blogService.create(blogObject)
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
-      // renders the newly added blog to the end of bloglist
-      setBlogs(blogs.concat(blogObject))
+      setBlogs(blogs.concat(returnedBlog))
       setSuccesfulMessage(`A new blog ${newTitle} added`)
       setTimeout(() => {
         setSuccesfulMessage(null)
@@ -105,7 +105,7 @@ const App = () => {
       }, 5000)
     }
   }
-  
+
   // adds right information to http request put when adding a like
   const addLike = async (id) => {
     console.log('clicked button')
@@ -123,8 +123,15 @@ const App = () => {
       }
       console.log('blogObject', blogObject)
       blogService.setToken(user.token)
-      const returnedBlog = await blogService.update(blogObject)
-      setBlogs(blogs.map(blog => blog.title !== blogObject.title ? blog : returnedBlog))
+      await blogService.update(blogObject)
+      const blogToShow = {
+        user: rightObject.user,
+        likes: rightObject.likes + 1,
+        author: rightObject.author,
+        title: rightObject.title,
+        url: rightObject.url,
+      }
+      setBlogs(blogs.map(blog => blog.title !== blogObject.title ? blog : blogToShow))
     } catch (exception) {
       setErrorMessage('Something went wrong')
       setTimeout(() => {
@@ -133,32 +140,34 @@ const App = () => {
     }
   }
 
+  // removing blog from database and re-rendering blogs list
   const removeBlog = async (id) => {
     try {
       console.log('clicked remove', id)
       const findBlog = blogs.find(blog => blog.id === id)
       console.log('blog to remove', findBlog)
-      window.confirm(`Remove blog ${findBlog.title}`)
-      blogService.setToken(user.token)
-      const deletedBlog = await blogService.remove(findBlog)
-      console.log('deleted Blog', deletedBlog)
-      setBlogs(blogs.filter(blog => blog.id !== findBlog.id))
-      setSuccesfulMessage(`Succesfully removed ${deletedBlog.title}`)
-      setTimeout(() => {
-        setSuccesfulMessage(null)
-      })
+      if (window.confirm(`Remove blog ${findBlog.title}`)){
+        blogService.setToken(user.token)
+        const deletedBlog = await blogService.remove(findBlog)
+        console.log('deleted Blog', deletedBlog)
+        setBlogs(blogs.filter(blog => blog.id !== findBlog.id))
+        setSuccesfulMessage(`Succesfully removed ${deletedBlog.title}`)
+        setTimeout(() => {
+          setSuccesfulMessage(null)
+        })
+      }
     } catch (exception) {
       setErrorMessage('Unable to delete blog')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
     }
-    
+
   }
   // hides and shows blog form with the click of a button
   const blogForm = () => {
-    const hideWhenVisible = { display: newBlogVisible ? 'none' : ''}
-    const showWhenVisible = { display: newBlogVisible ? '' : 'none'}
+    const hideWhenVisible = { display: newBlogVisible ? 'none' : '' }
+    const showWhenVisible = { display: newBlogVisible ? '' : 'none' }
 
     return (
       <div>
@@ -167,13 +176,13 @@ const App = () => {
         </div>
         <div style={showWhenVisible}>
           <CreateBlog
-          addBlog={addBlog}
-          handleTitleChange={({ target }) => setNewTitle(target.value)}
-          handleAuthorChange={({ target }) => setNewAuthor(target.value)}
-          handleUrlChange={({ target }) => setNewUrl(target.value)}
-          newTitle={newTitle}
-          newAuthor={newAuthor}
-          newUrl={newUrl}
+            addBlog={addBlog}
+            handleTitleChange={({ target }) => setNewTitle(target.value)}
+            handleAuthorChange={({ target }) => setNewAuthor(target.value)}
+            handleUrlChange={({ target }) => setNewUrl(target.value)}
+            newTitle={newTitle}
+            newAuthor={newAuthor}
+            newUrl={newUrl}
           />
           <button onClick={() => setNewBlogVisible(false)}>cancel</button>
         </div>
@@ -184,7 +193,7 @@ const App = () => {
   // maps through blogs and sends each blog to Blog component to render onscreen
   const rows = () => {
     blogs.sort((a, b) => b.likes - a.likes)
-    const some = () => blogs.map(blog => 
+    const some = () => blogs.map(blog =>
       <Blog
         key={blog.title}
         blog={blog}
@@ -192,6 +201,7 @@ const App = () => {
         showAll={showAll}
         currentTitle={currentTitle}
         addLike={addLike}
+        remove={remove}
         removeBlog={removeBlog}
       />)
     return some()
@@ -201,18 +211,20 @@ const App = () => {
   // so that it can be compared to show all info only on clicked blog
   const handleBlogs = (title) => {
     console.log('Clicked name')
-    console.log('cliced blog', title)
+    console.log('clicked blog', title)
     setCurrentTitle(title)
-    if (showAll === false) {
+    setRemove(user.username)
+    if (showAll === false) {
       setShowAll(true)
     } else if (title === currentTitle) {
       setShowAll(false)
     }
   }
+
   // if user is not logged in app shows only login form
   if (user === null) {
     return (
-      <LoginForm 
+      <LoginForm
         succesfulMessage={succesfulMessage}
         errorMessage={errorMessage}
         handleLogin={handleLogin}
@@ -228,7 +240,7 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-      <p>{user.name} logged in <button type="submit" onClick={() => logoutHandler()}>logout</button></p> 
+      <p>{user.name} logged in <button type="submit" onClick={() => logoutHandler()}>logout</button></p>
       <br/>
       <Notifications.Notification message={succesfulMessage}/>
       <Notifications.ErrorNotification message={errorMessage} />

@@ -6,28 +6,28 @@ const CreateBlog = (props) => {
     <form onSubmit={props.addBlog}>
       <h2>Create a new blog</h2>
       <div>
-        Title: 
-          <input
+        Title:
+        <input
           type="text"
           value={props.newTitle}
           onChange={props.handleTitleChange}
-          />
+        />
       </div>
       <div>
-        Author: 
-          <input
+        Author:
+        <input
           type="text"
           value={props.newAuthor}
           onChange={props.handleAuthorChange}
-          />
+        />
       </div>
       <div>
-        Url: 
-          <input
+        Url:
+        <input
           type="url"
           value={props.newUrl}
           onChange={props.handleUrlChange}
-          />
+        />
       </div>
       <div>
         <button type="submit">create</button>

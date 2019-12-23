@@ -21,7 +21,7 @@ const Blog = ({
   // which is saved onClick to currentTitle
   if (showAll && blog.title === currentTitle && remove === blog.user.username) {
     return(
-      <div style={blogStyle}>
+      <div className='titleAuthor' style={blogStyle}>
         <p onClick={() => handleBlogs(blog.title)}>{blog.title}, {blog.author}</p>
         <p>
           <a href={blog.url}>{blog.url}</a><br/>
@@ -33,7 +33,7 @@ const Blog = ({
     )
   } else if (showAll && blog.title === currentTitle) {
     return(
-      <div style={blogStyle}>
+      <div className='titleAuthor' style={blogStyle}>
         <p onClick={() => handleBlogs(blog.title)}>{blog.title}, {blog.author}</p>
         <p>
           <a href={blog.url}>{blog.url}</a><br/>
@@ -43,7 +43,7 @@ const Blog = ({
     )
   }
   return (
-    <div onClick={() => handleBlogs(blog.title)} style={blogStyle}>
+    <div className='titleAuthor' onClick={() => handleBlogs(blog.title)} style={blogStyle}>
       <p>{blog.title}, {blog.author} </p>
     </div>
   )

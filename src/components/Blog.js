@@ -10,11 +10,11 @@ const Blog = ({
   removeBlog
 }) => {
   const blogStyle = {
-    padding: 5,
+    padding: 10,
     margin: 5,
     border: 'solid',
     borderWidth: 1,
-    borderRadius: 10
+    borderRadius: 10,
   }
 
   // checking if name has been clicked to set showAll true and if blog title is the same
